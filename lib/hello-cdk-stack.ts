@@ -1,8 +1,8 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import { Stack, StackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from "aws-cdk-lib";
-import { Table, AttributeType, } from "aws-cdk-lib/aws-dynamodb";
+import { Table, AttributeType } from "aws-cdk-lib/aws-dynamodb";
 import { AssetCode, Function, Runtime } from "aws-cdk-lib/aws-lambda";
 import {
   RestApi,
@@ -11,7 +11,7 @@ import {
   MockIntegration,
   PassthroughBehavior,
 } from "aws-cdk-lib/aws-apigateway";
-  
+
 export class HelloCdkStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -56,49 +56,48 @@ export class HelloCdkStack extends Stack {
     const getItemIntegration = new LambdaIntegration(getItemLambda);
     singleItem.addMethod("GET", getItemIntegration);
     addCorsOptions(items);
-
   }
 }
 
 export function addCorsOptions(apiResource: IResource) {
   apiResource.addMethod(
     "OPTIONS",
-  new MockIntegration({
-  integrationResponses: [
-  {
-  statusCode: "200",
-  responseParameters: {
-    "method.response.header.Access-Control-Allow-Headers":
-    "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
-    "method.response.header.Access-Control-Allow-Origin": "'*'",
-    "method.response.header.Access-Control-Allow-Credentials":
-    "'false'",
-    "method.response.header.Access-Control-Allow-Methods":
-    "'OPTIONS,GET,PUT,POST,DELETE'",
-  },
-  },
-  ],
-  passthroughBehavior: PassthroughBehavior.NEVER,
-  requestTemplates: {
-    "application/json": '{"statusCode": 200}',
-  },
-  }),
-    {
-    methodResponses: [
-      {
-      statusCode: "200",
-        responseParameters: {
-        "method.response.header.Access-Control-Allow-Headers": true,
-        "method.response.header.Access-Control-Allow-Methods": true,
-        "method.response.header.Access-Control-Allow-Credentials": true,
-        "method.response.header.Access-Control-Allow-Origin": true,
+    new MockIntegration({
+      integrationResponses: [
+        {
+          statusCode: "200",
+          responseParameters: {
+            "method.response.header.Access-Control-Allow-Headers":
+              "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+            "method.response.header.Access-Control-Allow-Origin": "'*'",
+            "method.response.header.Access-Control-Allow-Credentials":
+              "'false'",
+            "method.response.header.Access-Control-Allow-Methods":
+              "'OPTIONS,GET,PUT,POST,DELETE'",
+          },
         },
+      ],
+      passthroughBehavior: PassthroughBehavior.NEVER,
+      requestTemplates: {
+        "application/json": '{"statusCode": 200}',
       },
-    ],
+    }),
+    {
+      methodResponses: [
+        {
+          statusCode: "200",
+          responseParameters: {
+            "method.response.header.Access-Control-Allow-Headers": true,
+            "method.response.header.Access-Control-Allow-Methods": true,
+            "method.response.header.Access-Control-Allow-Credentials": true,
+            "method.response.header.Access-Control-Allow-Origin": true,
+          },
+        },
+      ],
     }
   );
 }
-  
+
 const app = new cdk.App();
 new HelloCdkStack(app, "HelloCdkStack");
 app.synth();
